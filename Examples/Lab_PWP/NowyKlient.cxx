@@ -11,13 +11,46 @@
 
 =========================================================================*/
 
+
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <cstdlib>
+#include <cstring>
 
 #include "igtlOSUtil.h"
 #include "igtlPointMessage.h"
 #include "igtlClientSocket.h"
+
+#include "igtlOSUtil.h"
+#include "igtlMessageHeader.h"
+#include "igtlTransformMessage.h"
+#include "igtlImageMessage.h"
+#include "igtlServerSocket.h"
+#include "igtlStatusMessage.h"
+#include "igtlPositionMessage.h"
+
+#if OpenIGTLink_PROTOCOL_VERSION >= 2
+#include "igtlPointMessage.h"
+#include "igtlTrajectoryMessage.h"
+#include "igtlStringMessage.h"
+#include "igtlBindMessage.h"
+#include "igtlCapabilityMessage.h"
+#endif //OpenIGTLink_PROTOCOL_VERSION >= 2
+
+
+int ReceiveTransform(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceivePosition(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveImage(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveStatus(igtl::Socket * socket, igtl::MessageHeader * header);
+
+#if OpenIGTLink_PROTOCOL_VERSION >= 2
+int ReceivePoint(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
+int ReceiveString(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveBind(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header);
+#endif //OpenIGTLink_PROTOCOL_VERSION >= 2
 
 
 int main(int argc, char* argv[])
@@ -100,6 +133,98 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Send
   socket->Send(pointMsg->GetPackPointer(), pointMsg->GetPackSize());
+
+  // Masage
+  
+
+  while (1)
+  {
+	  //------------------------------------------------------------
+	  // Waiting for Connection
+	  
+	  if (socket.IsNotNull()) // if client connected
+	  {
+		  // Create a message buffer to receive header
+		  igtl::MessageHeader::Pointer headerMsg;
+		  headerMsg = igtl::MessageHeader::New();
+
+		  //------------------------------------------------------------
+		  // loop
+		  for (int i = 0; i < 100; i++)
+		  {
+
+			  // Initialize receive buffer
+			  headerMsg->InitPack();
+
+			  // Receive generic header from the socket
+			  int r = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+			  if (r == 0)
+			  {
+				  socket->CloseSocket();
+			  }
+			  if (r != headerMsg->GetPackSize())
+			  {
+				  continue;
+			  }
+
+			  // Deserialize the header
+			  headerMsg->Unpack();
+
+
+
+			  // Check data type and receive data body
+			  if (strcmp(headerMsg->GetDeviceType(), "TRANSFORM") == 0)
+			  {
+				  ReceiveTransform(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "POSITION") == 0)
+			  {
+				  ReceivePosition(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "IMAGE") == 0)
+			  {
+				  ReceiveImage(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "STATUS") == 0)
+			  {
+				  ReceiveStatus(socket, headerMsg);
+			  }
+#if OpenIGTLink_PROTOCOL_VERSION >= 2
+			  else if (strcmp(headerMsg->GetDeviceType(), "POINT") == 0)
+			  {
+				  ReceivePoint(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "TRAJ") == 0)
+			  {
+				  ReceiveTrajectory(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "STRING") == 0)
+			  {
+				  ReceiveString(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "BIND") == 0)
+			  {
+				  ReceiveBind(socket, headerMsg);
+			  }
+			  else if (strcmp(headerMsg->GetDeviceType(), "CAPABILITY") == 0)
+			  {
+				  ReceiveCapability(socket, headerMsg);
+			  }
+#endif //OpenIGTLink_PROTOCOL_VERSION >= 2
+			  else
+			  {
+				  // if the data type is unknown, skip reading.
+				  std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
+				  std::cerr << "Size : " << headerMsg->GetBodySizeToRead() << std::endl;
+				  socket->Skip(headerMsg->GetBodySizeToRead(), 0);
+			  }
+		  }
+	  }
+	  
+
+	  
+  }
+  
   
   
   //------------------------------------------------------------
