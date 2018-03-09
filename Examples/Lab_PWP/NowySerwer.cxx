@@ -232,7 +232,9 @@ int main(int argc, char* argv[])
   pointMsg3->Pack();
 
   //---------------------------------------------------------
-  // Wysyanie
+  // Wyslanie
+
+
 
   while(true)
   {

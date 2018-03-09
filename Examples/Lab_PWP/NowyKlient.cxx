@@ -103,33 +103,47 @@ int main(int argc, char* argv[])
   socket->Send(pointMsg->GetPackPointer(), pointMsg->GetPackSize());
   
   
-  //------------------------------------------------------------
-  // Receive
- igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+ while (1)
+  {
+    //------------------------------------------------------------
+    // Waiting for Connection
+    
+      // Create a message buffer to receive header
+      igtl::MessageHeader::Pointer headerMsg;
+      headerMsg = igtl::MessageHeader::New();
 
- while(true)
- {
-	 headerMsg->InitPack();
-	
-	 int r = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
-	 if (r == 0)
-     {
-		 socket->CloseSocket();
-	 }
-	 if (r != headerMsg->GetPackSize())
-     {
-		 continue;
-     }
+      //------------------------------------------------------------
+      // loop
+      for (int i = 0; i < 100; i ++)
+        {
+        // Initialize receive buffer
+        headerMsg->InitPack();
+
+        // Receive generic header from the socket
+        int r = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+        if (r == 0)
+          {
+          socket->CloseSocket();
+          }
+        if (r != headerMsg->GetPackSize())
+          {
+          continue;
+          }
+
+        // Deserialize the header
+        headerMsg->Unpack();
+        
+
 	 if (strcmp(headerMsg->GetDeviceType(), "POINT") == 0)
      {
 		 ReceivePoint(socket, headerMsg);
 	 }
  }
-
-
+	
   //------------------------------------------------------------
   // Close the socket
   socket->CloseSocket();
+  }
 
 }
 
