@@ -173,6 +173,74 @@ int main(int argc, char* argv[])
         }
       }
     }
+
+  //---------------------------------------------------------
+  //Nowe punkty
+
+  //---------------------------
+  // Create 1st point
+  igtl::PointMessage::Pointer pointMsg1;
+  pointMsg1 = igtl::PointMessage::New();
+  pointMsg1->SetDeviceName("PointSender");
+
+  igtl::PointMessage::Pointer pointMsg2;
+  pointMsg2 = igtl::PointMessage::New();
+  pointMsg2->SetDeviceName("PointSender");
+
+  igtl::PointMessage::Pointer pointMsg3;
+  pointMsg3 = igtl::PointMessage::New();
+  pointMsg3->SetDeviceName("PointSender");
+
+  igtl::PointElement::Pointer point0;
+  point0 = igtl::PointElement::New();
+  point0->SetName("POINT_0");
+  point0->SetGroupName("GROUP_0");
+  point0->SetRGBA(0xFF, 0x00, 0x00, 0xFF);
+  point0->SetPosition(-10.0, -20.0, -30.0);
+  point0->SetRadius(15.0);
+  point0->SetOwner("IMAGE_0");
+
+  pointMsg1->AddPointElement(point0);
+  pointMsg1->Pack();
+
+  //---------------------------
+  // Create 2nd point
+  igtl::PointElement::Pointer point1;
+  point1 = igtl::PointElement::New();
+  point1->SetName("POINT_1");
+  point1->SetGroupName("GROUP_0");
+  point1->SetRGBA(0x00, 0xFF, 0x00, 0xFF);
+  point1->SetPosition(-40.0, -50.0, -60.0);
+  point1->SetRadius(45.0);
+  point1->SetOwner("IMAGE_0");
+
+  pointMsg2->AddPointElement(point1);
+  pointMsg2->Pack();
+  
+  //---------------------------
+  // Create 3rd point
+  igtl::PointElement::Pointer point2;
+  point2 = igtl::PointElement::New();
+  point2->SetName("POINT_2");
+  point2->SetGroupName("GROUP_0");
+  point2->SetRGBA(0x00, 0x00, 0xFF, 0xFF);
+  point2->SetPosition(-70.0, -80.0, -90.0);
+  point2->SetRadius(75.0);
+  point2->SetOwner("IMAGE_0");
+
+  pointMsg3->AddPointElement(point2);
+  pointMsg3->Pack();
+
+  //---------------------------------------------------------
+  // Wysyanie
+
+  while(true)
+  {
+	  socket->Send(pointMsg1->GetPackPointer(), pointMsg1->GetPackSize());
+	  socket->Send(pointMsg2->GetPackPointer(), pointMsg2->GetPackSize());
+	  socket->Send(pointMsg3->GetPackPointer(), pointMsg3->GetPackSize());
+  }
+  	
     
   //------------------------------------------------------------
   // Close connection (The example code never reaches to this section ...)
