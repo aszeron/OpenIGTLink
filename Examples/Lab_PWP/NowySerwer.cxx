@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Parse Arguments
 
-  if (argc != 2) // check number of arguments
+  /*if (argc != 2) // check number of arguments
     {
     // If not correct, print usage
     std::cerr << "Usage: " << argv[0] << " <port>"    << std::endl;
@@ -60,7 +60,9 @@ int main(int argc, char* argv[])
     exit(0);
     }
 
-  int    port     = atoi(argv[1]);
+  int    port     = atoi(argv[1]);*/
+  int	port	= 1280;
+
 
   igtl::ServerSocket::Pointer serverSocket;
   serverSocket = igtl::ServerSocket::New();
@@ -172,7 +174,8 @@ int main(int argc, char* argv[])
           }
         }
       }
-    }
+  }
+    
 
   //---------------------------------------------------------
   //Nowe punkty
@@ -248,6 +251,7 @@ int main(int argc, char* argv[])
   // Close connection (The example code never reaches to this section ...)
   
   socket->CloseSocket();
+  
 
 }
 

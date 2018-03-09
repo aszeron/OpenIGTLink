@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Parse Arguments
 
-  if (argc != 3) // check number of arguments
+  /*if (argc != 3) // check number of arguments
     {
     // If not correct, print usage
     std::cerr << "Usage: " << argv[0] << " <hostname> <port> <fps>"    << std::endl;
@@ -36,7 +36,10 @@ int main(int argc, char* argv[])
     }
 
   char*  hostname = argv[1];
-  int    port     = atoi(argv[2]);
+  int    port     = atoi(argv[2]);*/
+
+	 char*  hostname	= "127.0.0.1";
+	 int	port		= 1280;			
 
   //------------------------------------------------------------
   // Establish Connection
@@ -103,7 +106,7 @@ int main(int argc, char* argv[])
   socket->Send(pointMsg->GetPackPointer(), pointMsg->GetPackSize());
   
   
- while (1)
+while (1)
   {
     //------------------------------------------------------------
     // Waiting for Connection
