@@ -27,7 +27,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
     Capability
     Trajectory
     SessionManager
-    Lab_PWP asd
+    Lab_PWP
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
 
